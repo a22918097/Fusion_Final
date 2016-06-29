@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -1066,7 +1066,7 @@ parameters</string>
         <string>Tracking</string>
        </property>
        <property name="checked">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
       <widget class="QCheckBox" name="checkBox_ot_trajectory_kalman">
@@ -1097,6 +1097,9 @@ parameters</string>
        <property name="text">
         <string>Kalman filter</string>
        </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
       </widget>
       <widget class="QCheckBox" name="checkBox_ot_trajectory">
        <property name="geometry">
@@ -1111,7 +1114,7 @@ parameters</string>
         <string>Trajectory</string>
        </property>
        <property name="checked">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
       <widget class="QCheckBox" name="checkBox_ot_trajectory_raw">
@@ -1127,7 +1130,7 @@ parameters</string>
         <string>raw</string>
        </property>
        <property name="checked">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
      </widget>
@@ -1220,7 +1223,7 @@ parameters</string>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab_7">
      <attribute name="title">
@@ -1614,7 +1617,7 @@ parameters</string>
           <string>Cart</string>
          </property>
          <property name="checked">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -1622,6 +1625,9 @@ parameters</string>
         <widget class="QRadioButton" name="radioButton_vehicle_tractor">
          <property name="text">
           <string>Tractor</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
          </property>
         </widget>
        </item>

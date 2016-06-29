@@ -76,7 +76,7 @@ bool lrf_controller::open(QString comPortIn, int baudRateIn)
         cmd_LMS291[6] = 0x50;
         break;
     case 500000:
-        baudRate = QSerialPort::Baud500000;     // need to revise qserialport.h
+//        baudRate = QSerialPort::Baud500000;     // need to revise qserialport.h
         cmd_LMS291[5] = 0x48;
         cmd_LMS291[6] = 0x58;
         break;

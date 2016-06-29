@@ -1,5 +1,5 @@
 #include "videorecord.h"
-
+#include <QDebug>
 videoRecord::videoRecord(int img_h, int img_w)
 {
     fg_record = false;
@@ -147,7 +147,7 @@ bool videoRecord::loadVideo(QString str, bool fg_str_is_file)
         fg_loaded = false;
         return fg_loaded;
     }
-
+    qDebug() << file_path;
     cap.open(file_path.toStdString());
     if (!cap.isOpened()) {
         fg_loaded = false;

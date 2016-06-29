@@ -336,7 +336,6 @@ void RadarController::retrievingData()
             }
             else
                 objects[_id].lat_rate = b_track_lat_rate.to_ulong() * 0.25;
-            objects[_id].lat_rate = b_track_lat_rate.to_ulong() * 0.25;
             objects[_id].grouping_changed = (b_track_lat_rate.to_ulong() == 1 ? true : false);
             objects[_id].oncoming = (b_track_oncoming.to_ulong() == 1 ? true : false);
             objects[_id].status = b_track_status.to_ulong();

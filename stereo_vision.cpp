@@ -58,8 +58,10 @@ stereo_vision::stereo_vision() : TopView(20, 200, 3000, 19.8, 1080, 750, 270, 12
 #ifdef opencv_cuda
     bm = cv::cuda::createStereoBM(16, 9);
 #else
-    bm = cv::createStereoBM(16, 9);
-    sgbm = cv::createStereoSGBM(0, 16, 3);
+    //bm = cv::createStereoBM(16, 9);
+    bm = cv::StereoBM::create(16, 9);
+    //sgbm = cv::createStereoSGBM(0, 16, 3);
+    sgbm = cv::StereoSGBM::create(0, 16, 3);
 #endif
     img_detected = cv::Mat::zeros(IMG_H, IMG_W, CV_8UC3);
     img_detected_display = cv::Mat::zeros(IMG_H, IMG_W, CV_8UC3);
@@ -150,7 +152,16 @@ void stereo_vision::resetOpen(int device_index_L, int device_index_R)
 }
 
 bool stereo_vision::open(int device_index_L, int device_index_R)
-{
+{/*
+    cv::VideoCapture cap(0);
+    cv::Mat frame;
+    for(;;){
+        cap>>frame;
+        imshow("frame",frame);
+        cv::waitKey(33);
+
+    }*/
+//    qDebug() << cam_R.isOpened();
     resetOpen(device_index_L, device_index_R);
     if (fg_cam_L && fg_cam_R)
         return true;
@@ -214,8 +225,8 @@ void stereo_vision::matchParamInitialize(int cur_mode)
     int SAD_window_size = 0, number_disparity = 128;  // 0
     switch (cur_mode) {
     case SV::STEREO_MATCH::BM:
-//        bm->setROI1(roi1);
-//        bm->setROI2(roi2);
+        //        bm->setROI1(roi1);
+        //        bm->setROI2(roi2);
         bm->setPreFilterCap(31);
         bm->setBlockSize(SAD_window_size > 0 ? SAD_window_size : 9);
         bm->setMinDisparity(0);
@@ -711,7 +722,7 @@ bool stereo_vision::dataIn()
         // For synchronization replay
         if (re.tr->fg_loaded && re.vr->fg_loaded)
             if (!re.tr->fg_data_end && re.tr->current_frame_count < re.vr->current_frame_count) {
-//                std::cout<<re.tr->fg_data_end<<" "<<re.tr->current_frame_count<<" "<<re.vr->current_frame_count;
+                //                std::cout<<re.tr->fg_data_end<<" "<<re.tr->current_frame_count<<" "<<re.vr->current_frame_count;
                 return false;
             }
         if (!re.vr->segmentTwoImages(&img_L, &img_R, cv::Size(IMG_W, IMG_H))) {
@@ -720,8 +731,8 @@ bool stereo_vision::dataIn()
         }
         break;
     case SV::INPUT_SOURCE::IMG:
-//        img_L = ;
-//        img_R = ;
+        //        img_L = ;
+        //        img_R = ;
         break;
     }
 
@@ -795,8 +806,8 @@ int stereo_vision::dataExec()
                 std::cout<<ttt.restart()<<"\t";
 #endif
 
-//                if (fg_recognition)
-//                    objectRecognition();
+                //                if (fg_recognition)
+                //                    objectRecognition();
 
 #ifdef debug_info_sv_time_proc
                 std::cout<<ttt.restart()<<"\t";
@@ -866,10 +877,10 @@ void stereo_vision::pointProjectTopView()
 
                 grid_row = corrGridRow(data[r][c].Z);
                 grid_col = corrGridCol(c);
-//                grid_row = 1.0 * log10(1.0 * data[r][c].Z / min_distance) / log10(1.0 + k);
-////                grid_col = 360.0 * img_col_half * atan((c / (double)(IMG_W / img_col) - img_col_half) / data[r][c].Z) / (view_angle * CV_PI) + img_col_half;
-////                grid_col = 1.0 * c * ratio_col; //**// old
-//                grid_col = 1.0 * c / this->c;
+                //                grid_row = 1.0 * log10(1.0 * data[r][c].Z / min_distance) / log10(1.0 + k);
+                ////                grid_col = 360.0 * img_col_half * atan((c / (double)(IMG_W / img_col) - img_col_half) / data[r][c].Z) / (view_angle * CV_PI) + img_col_half;
+                ////                grid_col = 1.0 * c * ratio_col; //**// old
+                //                grid_col = 1.0 * c / this->c;
 
                 // display each point on topview
                 if (fg_topview_plot_points)
