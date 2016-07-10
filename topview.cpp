@@ -283,7 +283,7 @@ void TopView::drawTopViewLines(int rows_interval, int cols_interval, bool fg_tag
 
 void TopView::resetTopView()
 {
-    topview.setTo(cv::Scalar(0, 0, 0, 0));
+    //topview.setTo(cv::Scalar(0, 0, 0, 0));
 
     for (int r = 0; r < img_row; r++)
         for (int c = 0; c < img_col; c++) {

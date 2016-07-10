@@ -1,6 +1,6 @@
 #include "radarcontroller.h"
 
-RadarController::RadarController() : TopView(1, 100, 20470, 102.3, 31900, 600, 900, 300, 400)//TopView(1, 200, 3000, 19.8, 1080, 750, 270, 125, 100)
+RadarController::RadarController() : TopView(1, 100, 3000, 102.3, 7409, 600, 900, 300, 400)//TopView(1, 200, 3000, 19.8, 1080, 750, 270, 125, 100)
 {
     fg_read = false;
     fg_data_in = false;
@@ -362,11 +362,11 @@ void RadarController::retrievingData()
             }
             else
                 objects[_id].range_rate = b_track_range_rate.to_ulong() * 0.01;
-
-            objects[_id].x = 1.0 * objects[_id].range * sin(abs(objects[_id].angle));
+            //degree to radian
+            objects[_id].x = 1.0 * objects[_id].range * sin(objects[_id].angle*CV_PI/180);
             objects[_id].y = 0.0;
-            objects[_id].z = objects[_id].range * cos(objects[_id].angle);
-
+            objects[_id].z = abs(objects[_id].range * cos(objects[_id].angle*CV_PI/180));
+//            qDebug() << _id << objects[_id].x << objects[_id].z << objects[_id].range << objects[_id].angle;
 #ifdef debug_info_radar_data
             std::cout<<_id<<"\t\n"<<
                     objects[_id].lat_rate <<" "<<
@@ -441,13 +441,18 @@ void RadarController::pointProjectTopView()
         resetTopView();
         current_count = 0;
     }
-
+    topview.setTo(cv::Scalar(0,0,0,0));
     int grid_row, grid_col;
     lock_radar.lockForWrite();
     for (int m = 0; m < OBJECT_NUM; m++) {
         if (objects[m].status >= obj_status_filtered) {
+
             grid_row = corrGridRow(100.0 * objects[m].z);
             grid_col = corrGridCol(100.0 * objects[m].x);
+            cv::putText(topview,QString::number(objects[m].range).toStdString(),cv::Point(0.5*900+objects[m].x/37*450+10,600-objects[m].z/30*600+10),cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar(0, 0, 0, 255));
+            cv::circle(topview,cv::Point(0.5*900+objects[m].x/37*450,600-objects[m].z/30*600),8,cv::Scalar(255,0,0,255),-1);
+//            cv::circle(topview,cv::Point(0.5*270+int(objects[i].avg_X/100),710-objects[i].avg_Z/3000*710+20),8,cv::Scalar(255,255,255,255),-1);
+//            qDebug() <<m <<objects[m].x <<objects[m].z << objects[m].range << objects[m].angle;
 //            grid_row = 1.0 * log10(100.0 * objects[m].z / min_distance) / log10(1.0 + k);
 //            grid_col = (100.0 * objects[m].x + 0.5 * chord_length) * img_col / chord_length;
             int grid_row_t = img_row - grid_row - 1;
@@ -470,7 +475,7 @@ void RadarController::pointProjectTopView()
     int gap_col  = 5;
     for (int r = 0; r < img_row; r++) {
         for (int c = 0; c < img_col; c++) {
-            if (grid_map[r][c].pts_num >= thresh_free_space) {
+            if (grid_map[r][c].pts_num >= thresh_free_space && grid_map[r][c].avg_Z < max_distance) {
                 int row = img_row - r - gap_row > 0 ? img_row - r - gap_row : 0;
                 int row_1 = img_row - (r + 1) + gap_row <= img_row ? img_row - (r + 1) + gap_row : img_row;
                 int col = c - gap_col > 0 ? c - gap_col : 0;
@@ -482,8 +487,11 @@ void RadarController::pointProjectTopView()
                 pts[3] = pointT(img_grid[row][col_1]);
 
                 p = (max_distance - 0.5 * (img_grid[row][col].y + img_grid[row_1][col].y)) - min_distance;
+//                cv::circle(grid_map_)
+//                cv::circle(topview,
 
-                cv::fillConvexPoly(topview, pts, thick_polygon, cv::Scalar(ptr[3 * p + 0], ptr[3 * p + 1], ptr[3 * p + 2], 255), 8, 0);
+
+//                cv::fillConvexPoly(topview, pts, thick_polygon, cv::Scalar(ptr[3 * p + 0], ptr[3 * p + 1], ptr[3 * p + 2], 255), 8, 0);
 //                cv::fillConvexPoly(topview, pts, thick_polygon, cv::Scalar(255, 255, 255, 255), 8, 0);
             }
         }

@@ -239,6 +239,8 @@ private:
 
     void stereoMatch();
 
+    int count;
+
     QTime t_p;                          // process time of all exec.
 
     // status ======================
@@ -287,6 +289,8 @@ private:
 
     // object information ==========
     int obj_nums;                       // maximum object detection amount
+
+
 
 public:
     struct objectInfo
@@ -343,7 +347,8 @@ public:
 
 private:
     objectInfo* objects;                // filtered objects
-
+    double temp_x[256];
+    double temp_z[256];
     void updateDataForDisplay();
     // object information ========== End
 
@@ -393,6 +398,8 @@ private:
     void pointProjectTopView();
 
     void pointProjectImage();
+
+    void initialtemp();
     // Topview ===================== End
 
 private slots:

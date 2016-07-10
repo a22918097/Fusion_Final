@@ -40,14 +40,13 @@ stereo_vision::stereo_vision() : TopView(20, 200, 3000, 19.8, 1080, 750, 270, 12
 
     objects = new objectInfo[obj_nums];
     objects_display = new objectInfo[obj_nums];
-
     data = new StereoData * [IMG_H];
     for (int r = 0; r < IMG_H; r++) {
         data[r] = new StereoData[IMG_W];
     }
-
+    initialtemp();
     createLUT();
-
+    count=0;
     // input source
     input_mode = SV::INPUT_SOURCE::CAM;
 
@@ -74,6 +73,10 @@ stereo_vision::stereo_vision() : TopView(20, 200, 3000, 19.8, 1080, 750, 270, 12
 #ifdef debug_info_sv_time_proc
     std::cout<<"dataIn\tMatch\tDepth\tvDisp\tTopview\tBlob\tImage\tOMatch"<<std::endl;
 #endif
+
+
+
+
 }
 
 stereo_vision::~stereo_vision()
@@ -223,10 +226,11 @@ void stereo_vision::matchParamInitialize(int cur_mode)
 {
     // default initialization
     int SAD_window_size = 0, number_disparity = 128;  // 0
+    cv::Rect roi1, roi2;
     switch (cur_mode) {
     case SV::STEREO_MATCH::BM:
-        //        bm->setROI1(roi1);
-        //        bm->setROI2(roi2);
+                bm->setROI1(roi1);
+                bm->setROI2(roi2);
         bm->setPreFilterCap(31);
         bm->setBlockSize(SAD_window_size > 0 ? SAD_window_size : 9);
         bm->setMinDisparity(0);
@@ -795,7 +799,7 @@ int stereo_vision::dataExec()
 #ifdef debug_info_sv_time_proc
             std::cout<<ttt.restart()<<"\t";
 #endif
-            blob(3000);
+            blob(3500);
 #ifdef debug_info_sv_time_proc
             std::cout<<ttt.restart()<<"\t";
 #endif
@@ -1031,10 +1035,9 @@ void stereo_vision::blob(int thresh_pts_num)
                 pts[1] = pointT(img_grid[row_1][col]);
                 pts[2] = pointT(img_grid[row_1][col_1]);
                 pts[3] = pointT(img_grid[row][col_1]);
-
                 p = (max_distance - 0.5 * (img_grid[row][col].y + img_grid[row_1][col].y)) - min_distance;
                 objects[grid_obj_label].color = cv::Scalar(ptr_color[3 * p + 0], ptr_color[3 * p + 1], ptr_color[3 * p + 2], 255);
-                cv::fillConvexPoly(topview, pts, thick_polygon, objects[grid_obj_label].color, 8, 0);
+                //cv::fillConvexPoly(topview, pts, thick_polygon, objects[grid_obj_label].color, 8, 0);
 
                 // find rect of object in topview
                 if (objects[grid_obj_label].rect_tl.x > c) objects[grid_obj_label].rect_tl.x = c;
@@ -1130,6 +1133,24 @@ void stereo_vision::pointProjectImage()
             objects[i].pc.range = sqrt(pow((double)(objects[i].avg_Z), 2) + pow((double)(objects[i].avg_X), 2));
             cv::Rect rect_tmp = cv::Rect(objects[i].tl.second, objects[i].tl.first, (objects[i].br.second - objects[i].tl.second), (objects[i].br.first - objects[i].tl.first));
             objects[i].img = img_r_L_tmp(rect_tmp);
+            //qDebug() << objects[i].avg_Z;
+            if(abs(objects[i].avg_Z-temp_z[i])>2000 || abs(objects[i].avg_X-temp_x[i])>5000||count==0){
+                temp_x[i]=objects[i].avg_X;
+                temp_z[i]=objects[i].avg_Z;
+                topview.setTo(cv::Scalar(0,0,0,0));
+                cv::circle(topview,cv::Point(0.5*270+int(objects[i].avg_X/100),710-objects[i].avg_Z/3000*710+20),8,cv::Scalar(255,255,255,255),-1);
+
+                count++;
+                }
+
+            else{
+                //cv::circle(topview,cv::Point(0.5*270+temp_x[i],710-temp_z[i]/3000*710),8,cv::Scalar(255,0,0,255),-1);
+                //topview.setTo(cv::Scalar(0,0,0,0));
+                //cv::circle(topview,cv::Point(0.5*270+int(objects[i].avg_X/100),710-objects[i].avg_Z/3000*710),8,cv::Scalar(255,255,255,255),-1);
+}
+
+
+
 
             cv::rectangle(img_detected, rect_tmp, objects[i].color, thick_obj_rect, 8, 0);
             cv::circle(img_detected, cv::Point(objects[i].center.second, objects[i].center.first), radius_obj_point, cv::Scalar(0, 255, 0), -1, 8, 0);
@@ -1138,6 +1159,15 @@ void stereo_vision::pointProjectImage()
         }
         lock_sv_object.unlock();
     }
+}
+
+void stereo_vision::initialtemp()
+{
+    for(int i=0;i<obj_nums;i++){
+        temp_x[i]=0;
+        temp_z[i]=0;
+    }
+
 }
 
 void stereo_vision::resetMatchedInfo(objectInfo &src)

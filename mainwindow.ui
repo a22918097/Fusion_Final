@@ -702,7 +702,7 @@ parameters</string>
        </rect>
       </property>
       <property name="text">
-       <string>Top view</string>
+       <string>Topview</string>
       </property>
       <property name="checked">
        <bool>true</bool>
@@ -1223,7 +1223,7 @@ parameters</string>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tab_7">
      <attribute name="title">
@@ -1466,8 +1466,8 @@ parameters</string>
      <zorder>label_radar_data_BG</zorder>
      <zorder>label_radar_data</zorder>
      <zorder>label_top_view_radar_long_BG</zorder>
-     <zorder>label_top_view_radar_long</zorder>
      <zorder>tableView_radar</zorder>
+     <zorder>label_top_view_radar_long</zorder>
     </widget>
     <widget class="QWidget" name="tab_8">
      <attribute name="title">

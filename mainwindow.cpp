@@ -191,6 +191,8 @@ MainWindow::MainWindow(QWidget *parent) :
             on_radioButton_vehicle_tractor_clicked();
 
     re.setParentFolder("data");
+//    ui->label_radar_data->setVisible(0);
+//    ui->label_radar_data_BG->setVisible(0);
 }
 
 MainWindow::~MainWindow()
