@@ -123,6 +123,8 @@ public:
     bool fg_tracking;                   // it's true when object tracking is activated
     bool fg_topview_plot_points;        // check wethere to plot each points on the topview
 
+    bool fg_avgfilter;
+
     // disparity image
     cv::Mat disp_raw;
     cv::Mat disp;
@@ -212,6 +214,8 @@ public:
     // object params ===============
     int thick_obj_rect, radius_obj_point;
     // object params =============== End
+
+
 
 private:
     int* LUT_grid_row;                  // depth -> grid map row
@@ -349,6 +353,7 @@ private:
     objectInfo* objects;                // filtered objects
     double temp_x[256];
     double temp_z[256];
+
     void updateDataForDisplay();
     // object information ========== End
 

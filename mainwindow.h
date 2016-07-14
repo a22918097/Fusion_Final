@@ -382,6 +382,7 @@ private slots:
     void on_pushButton_step_all_clicked();
     void on_checkBox_ot_trajectory_clicked(bool checked);
     void on_radioButton_vehicle_tractor_clicked();
+    void on_checkBox_avgfilter_clicked(bool checked);
 };
 
 // Mouse control ==========

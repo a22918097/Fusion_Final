@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QTime>
 #include <QStandardItemModel>
-
+#include "algorithm"
 // thread control
 #include <QReadWriteLock>
 extern QReadWriteLock lock_radar;
@@ -120,6 +120,15 @@ public:
 
 private:
     objectTrackingInfo* objects;
+
+    double vote_x[OBJECT_NUM][11];
+    double vote_z[OBJECT_NUM][11];
+    double vote_range[OBJECT_NUM][11];
+    double temp_range[OBJECT_NUM];
+    void findAVG(int m);
+    void clearMost(int m);
+    int vote_count=0;
+    void initial_temp_range();
 
 public:
     objectTrackingInfo* objects_display;

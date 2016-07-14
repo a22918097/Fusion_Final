@@ -38,6 +38,7 @@ RadarController::RadarController() : TopView(1, 100, 3000, 102.3, 7409, 600, 900
 
     time_gap = 10;
     t.start();
+    initial_temp_range();
 }
 
 RadarController::~RadarController()
@@ -107,7 +108,7 @@ bool RadarController::write()
     BYTE msg[dlc_esr] = {0x00};
     msg[6] = 0xBF;
     stat = canWriteWait(h, id_esr, msg, dlc_esr, 0, 0xff);
-//    std::cout<<"write stat: "<<stat<<std::endl;
+    //    std::cout<<"write stat: "<<stat<<std::endl;
     if (stat == canOK) {
         fg_data_in = true;
         return true;
@@ -159,6 +160,10 @@ void RadarController::busOff()
     stat = canBusOff(h);
     stat = canClose(h);
 }
+
+
+
+
 
 bool RadarController::dataIn()
 {
@@ -232,7 +237,7 @@ bool RadarController::dataIn()
             if (re.tr->fg_loaded && re.vr->fg_loaded)
                 if (re.vr->current_frame_count < re.tr->current_frame_count)
                     return false;
-//            std::cout<<re.vr->current_frame_count<<"\t"<<re.tr->current_frame_count<<std::endl;
+            //            std::cout<<re.vr->current_frame_count<<"\t"<<re.tr->current_frame_count<<std::endl;
         }
         fg_all_data_in = true;
         return true;
@@ -291,6 +296,30 @@ int RadarController::guiUpdate()
     return RADAR::STATUS::NO_UPDATE;
 }
 
+void RadarController::findAVG(int m)
+{
+    double temp=0;
+    for(int i=0;i<10;i++)
+    {
+        temp=temp+vote_range[m][i]/10.0;
+
+    }
+    vote_range[m][10]=temp;
+
+}
+
+void RadarController::clearMost(int m)
+{
+    for(int i=0 ; i< 10;i++)
+        vote_range[m][i]=0;
+}
+
+void RadarController::initial_temp_range()
+{
+    for(int i=0;i<OBJECT_NUM;i++)
+        temp_range[i]=0;
+}
+
 void RadarController::retrievingData()
 {
     if (fg_data_in) {
@@ -313,19 +342,19 @@ void RadarController::retrievingData()
 
 #ifdef debug_info_radar_data
             std::cout<<_id<<"\t\n"<<
-                    b_track_lat_rate <<" "<<
-                    b_track_oncoming <<" "<<
-                    b_track_grouping_changed <<" "<<
-                    b_track_status <<" "<<
-                    b_track_angle <<" "<<
-                    b_track_range <<" "<<
-                    b_track_bridge_object <<" "<<
-                    b_track_rolling_count <<" "<<
-                    b_track_width <<" "<<
-                    b_track_range_accel <<" "<<
-                    b_track_med_range_mode <<" "<<
-                    b_track_range_rate <<" "<<
-                    std::endl;
+                       b_track_lat_rate <<" "<<
+                       b_track_oncoming <<" "<<
+                       b_track_grouping_changed <<" "<<
+                       b_track_status <<" "<<
+                       b_track_angle <<" "<<
+                       b_track_range <<" "<<
+                       b_track_bridge_object <<" "<<
+                       b_track_rolling_count <<" "<<
+                       b_track_width <<" "<<
+                       b_track_range_accel <<" "<<
+                       b_track_med_range_mode <<" "<<
+                       b_track_range_rate <<" "<<
+                       std::endl;
 #endif
 
             lock_radar.lockForWrite();
@@ -366,22 +395,22 @@ void RadarController::retrievingData()
             objects[_id].x = 1.0 * objects[_id].range * sin(objects[_id].angle*CV_PI/180);
             objects[_id].y = 0.0;
             objects[_id].z = abs(objects[_id].range * cos(objects[_id].angle*CV_PI/180));
-//            qDebug() << _id << objects[_id].x << objects[_id].z << objects[_id].range << objects[_id].angle;
+            //            qDebug() << _id << objects[_id].x << objects[_id].z << objects[_id].range << objects[_id].angle;
 #ifdef debug_info_radar_data
             std::cout<<_id<<"\t\n"<<
-                    objects[_id].lat_rate <<" "<<
-                    objects[_id].oncoming <<" "<<
-                    objects[_id].grouping_changed <<" "<<
-                    objects[_id].status <<" "<<
-                    objects[_id].angle <<" "<<
-                    objects[_id].range <<" "<<
-                    objects[_id].bridge_object <<" "<<
-                    objects[_id].rolling_count <<" "<<
-                    objects[_id].width <<" "<<
-                    objects[_id].range_accel <<" "<<
-                    objects[_id].med_range_mode <<" "<<
-                    objects[_id].range_rate <<" "<<
-                    std::endl<<std::endl;
+                       objects[_id].lat_rate <<" "<<
+                       objects[_id].oncoming <<" "<<
+                       objects[_id].grouping_changed <<" "<<
+                       objects[_id].status <<" "<<
+                       objects[_id].angle <<" "<<
+                       objects[_id].range <<" "<<
+                       objects[_id].bridge_object <<" "<<
+                       objects[_id].rolling_count <<" "<<
+                       objects[_id].width <<" "<<
+                       objects[_id].range_accel <<" "<<
+                       objects[_id].med_range_mode <<" "<<
+                       objects[_id].range_rate <<" "<<
+                       std::endl<<std::endl;
 #endif
             lock_radar.unlock();
         }
@@ -422,9 +451,9 @@ void RadarController::pointDisplayFrontView()
             cv::rectangle(img_radar, cv::Rect(pt_x - obj_rect.x / 2, pt_y - obj_rect.y / 2, obj_rect.x, obj_rect.y), cv::Scalar(0, 0, 255, 255), 2, 8, 0);
             cv::putText(img_radar, QString::number(k).toStdString(), cv::Point(pt_x + obj_rect.x / 2, pt_y), cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar(0, 255, 0, 255));
 #ifdef debug_info_radar_data
-//                ui->textEdit->append("data struct\nangle: " + QString::number(objects[k].angle) + " range: " + QString::number(objects[k].range)
-//                                     + " accel: " + QString::number(objects[k].range_accel) + " width: " + QString::number(objects[k].width)
-//                                     + " (x,y,z) = (" + QString::number(objects[k].x) + ", " + QString::number(objects[k].y) + ", " + QString::number(objects[k].z) + ")");
+            //                ui->textEdit->append("data struct\nangle: " + QString::number(objects[k].angle) + " range: " + QString::number(objects[k].range)
+            //                                     + " accel: " + QString::number(objects[k].range_accel) + " width: " + QString::number(objects[k].width)
+            //                                     + " (x,y,z) = (" + QString::number(objects[k].x) + ", " + QString::number(objects[k].y) + ", " + QString::number(objects[k].z) + ")");
 #endif
             item[k].setText(QString::number(objects[k].range));
         }
@@ -441,30 +470,56 @@ void RadarController::pointProjectTopView()
         resetTopView();
         current_count = 0;
     }
-    topview.setTo(cv::Scalar(0,0,0,0));
+
     int grid_row, grid_col;
     lock_radar.lockForWrite();
     for (int m = 0; m < OBJECT_NUM; m++) {
+        vote_range[m][vote_count%10]=objects[m].range;
+//topview.setTo(cv::Scalar(0,0,0,0));
+        //        qDebug() << m << objects[m].range;
+
         if (objects[m].status >= obj_status_filtered) {
 
             grid_row = corrGridRow(100.0 * objects[m].z);
             grid_col = corrGridCol(100.0 * objects[m].x);
-            cv::putText(topview,QString::number(objects[m].range).toStdString(),cv::Point(0.5*900+objects[m].x/37*450+10,600-objects[m].z/30*600+10),cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar(0, 0, 0, 255));
-            cv::circle(topview,cv::Point(0.5*900+objects[m].x/37*450,600-objects[m].z/30*600),8,cv::Scalar(255,0,0,255),-1);
-//            cv::circle(topview,cv::Point(0.5*270+int(objects[i].avg_X/100),710-objects[i].avg_Z/3000*710+20),8,cv::Scalar(255,255,255,255),-1);
-//            qDebug() <<m <<objects[m].x <<objects[m].z << objects[m].range << objects[m].angle;
-//            grid_row = 1.0 * log10(100.0 * objects[m].z / min_distance) / log10(1.0 + k);
-//            grid_col = (100.0 * objects[m].x + 0.5 * chord_length) * img_col / chord_length;
+            if(vote_count%10==0){
+                findAVG(m);
+//                if(temp_range[m]!=vote_range[m][10])
+//                    topview.setTo(cv::Scalar(0,0,0,0));
+                if(vote_range[m][10]!=0 && vote_count%20==0){
+                    cv::putText(topview,QString::number(vote_range[m][10]).toStdString()+"m",cv::Point(0.5*900+objects[m].x/37*450+10,600-objects[m].z/30*600+10),cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar(0, 0, 0, 255));
+                    cv::circle(topview,cv::Point(0.5*900+objects[m].x/37*450,600-objects[m].z/30*600),6,cv::Scalar(0,0,0,255),-1);
+                    //qDebug() << m << vote_range[m][10] << objects[m].range << objects[m].x << objects[m].z;
+
+                }
+                clearMost(m);
+
+            }
+
+            else{
+//                cv::putText(topview,QString::number(objects[m].range).toStdString()+"m",cv::Point(0.5*900+objects[m].x/37*450+10,600-objects[m].z/30*600+10),cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar(0, 0, 0, 255));
+//                cv::circle(topview,cv::Point(0.5*900+objects[m].x/37*450,600-objects[m].z/30*600),6,cv::Scalar(0,0,0,255),-1);
+            }
+            //            cv::circle(topview,cv::Point(0.5*270+int(objects[i].avg_X/100),710-objects[i].avg_Z/3000*710+20),8,cv::Scalar(255,255,255,255),-1);
+            //            qDebug() <<m <<objects[m].x <<objects[m].z << objects[m].range << objects[m].angle;
+            //            grid_row = 1.0 * log10(100.0 * objects[m].z / min_distance) / log10(1.0 + k);
+            //            grid_col = (100.0 * objects[m].x + 0.5 * chord_length) * img_col / chord_length;
+
             int grid_row_t = img_row - grid_row - 1;
             int grid_col_t = grid_col;
             // mark each point belongs to which cell
             if (grid_row_t >= 0 && grid_row_t < img_row &&
                     grid_col_t >= 0 && grid_col_t < img_col) {
                 grid_map[grid_row_t][grid_col_t].pts_num++;
-//                std::cout<<data[m].z<<std::endl;
+                //                std::cout<<data[m].z<<std::endl;
             }
         }
+        temp_range[m]=vote_range[m][10];
     }
+
+    vote_count++;
+    if(vote_count%20==0)
+        topview.setTo(cv::Scalar(0,0,0,0));
     lock_radar.unlock();
 
     // check whether the cell is satisfied as an object
@@ -487,12 +542,12 @@ void RadarController::pointProjectTopView()
                 pts[3] = pointT(img_grid[row][col_1]);
 
                 p = (max_distance - 0.5 * (img_grid[row][col].y + img_grid[row_1][col].y)) - min_distance;
-//                cv::circle(grid_map_)
-//                cv::circle(topview,
+                //                cv::circle(grid_map_)
+                //                cv::circle(topview,
 
 
-//                cv::fillConvexPoly(topview, pts, thick_polygon, cv::Scalar(ptr[3 * p + 0], ptr[3 * p + 1], ptr[3 * p + 2], 255), 8, 0);
-//                cv::fillConvexPoly(topview, pts, thick_polygon, cv::Scalar(255, 255, 255, 255), 8, 0);
+                //                cv::fillConvexPoly(topview, pts, thick_polygon, cv::Scalar(ptr[3 * p + 0], ptr[3 * p + 1], ptr[3 * p + 2], 255), 8, 0);
+                //                cv::fillConvexPoly(topview, pts, thick_polygon, cv::Scalar(255, 255, 255, 255), 8, 0);
             }
         }
     }

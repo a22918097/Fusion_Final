@@ -94,6 +94,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->label_gui_left_oncoming->setVisible(false);
     ui->label_gui_right_oncoming->setVisible(false);
     ui->label_gui_sign->setVisible(false);
+
     QObject::connect(si, SIGNAL(guiDisplay(int, bool)), this, SLOT(guiDisplay(int, bool)));
 
     // Laser range finder ======================
@@ -141,7 +142,7 @@ MainWindow::MainWindow(QWidget *parent) :
     on_checkBox_topview_plot_points_clicked(ui->checkBox_topview_plot_points->isChecked());
     on_checkBox_do_calibration_clicked(ui->checkBox_do_calibration->isChecked());
     on_checkBox_do_depth_clicked(ui->checkBox_do_depth->isChecked());
-
+    on_checkBox_avgfilter_clicked(ui->checkBox_avgfilter->isChecked());
     // top view
     svDisplayTopViewBG();
     // Stereo vision =========================== End
@@ -191,8 +192,10 @@ MainWindow::MainWindow(QWidget *parent) :
             on_radioButton_vehicle_tractor_clicked();
 
     re.setParentFolder("data");
-//    ui->label_radar_data->setVisible(0);
-//    ui->label_radar_data_BG->setVisible(0);
+    ui->label_radar_data->setVisible(0);
+    ui->label_radar_data_BG->setVisible(0);
+
+
 }
 
 MainWindow::~MainWindow()
@@ -927,7 +930,17 @@ void MainWindow::on_checkBox_do_depth_clicked(bool checked)
         ui->checkBox_sv_topview->setEnabled(false);
         ui->checkBox_sv_reproject->setEnabled(false);
         si->sv->fg_stereoMatch = false;
+
     }
+}
+void MainWindow::on_checkBox_avgfilter_clicked(bool checked)
+{
+    if(checked)
+        si->sv->fg_avgfilter=true;
+
+    else
+        si->sv->fg_avgfilter=false;
+
 }
 
 void MainWindow::on_checkBox_pseudo_color_clicked(bool checked)
@@ -1938,3 +1951,4 @@ void MainWindow::guiDisplay(int type, bool fg_on)
     qApp->sendPostedEvents();
     qApp->processEvents();
 }
+
