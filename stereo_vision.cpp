@@ -164,7 +164,7 @@ bool stereo_vision::open(int device_index_L, int device_index_R)
         cv::waitKey(33);
 
     }*/
-//    qDebug() << cam_R.isOpened();
+    //    qDebug() << cam_R.isOpened();
     resetOpen(device_index_L, device_index_R);
     if (fg_cam_L && fg_cam_R)
         return true;
@@ -229,8 +229,8 @@ void stereo_vision::matchParamInitialize(int cur_mode)
     cv::Rect roi1, roi2;
     switch (cur_mode) {
     case SV::STEREO_MATCH::BM:
-                bm->setROI1(roi1);
-                bm->setROI2(roi2);
+        bm->setROI1(roi1);
+        bm->setROI2(roi2);
         bm->setPreFilterCap(31);
         bm->setBlockSize(SAD_window_size > 0 ? SAD_window_size : 9);
         bm->setMinDisparity(0);
@@ -1040,7 +1040,7 @@ void stereo_vision::blob(int thresh_pts_num)
                 p = (max_distance - 0.5 * (img_grid[row][col].y + img_grid[row_1][col].y)) - min_distance;
                 objects[grid_obj_label].color = cv::Scalar(ptr_color[3 * p + 0], ptr_color[3 * p + 1], ptr_color[3 * p + 2], 255);
                 if(!fg_avgfilter)
-                cv::fillConvexPoly(topview, pts, thick_polygon, objects[grid_obj_label].color, 8, 0);
+                    cv::fillConvexPoly(topview, pts, thick_polygon, objects[grid_obj_label].color, 8, 0);
 
                 // find rect of object in topview
                 if (objects[grid_obj_label].rect_tl.x > c) objects[grid_obj_label].rect_tl.x = c;
@@ -1136,28 +1136,28 @@ void stereo_vision::pointProjectImage()
             objects[i].pc.range = sqrt(pow((double)(objects[i].avg_Z), 2) + pow((double)(objects[i].avg_X), 2));
             cv::Rect rect_tmp = cv::Rect(objects[i].tl.second, objects[i].tl.first, (objects[i].br.second - objects[i].tl.second), (objects[i].br.first - objects[i].tl.first));
             objects[i].img = img_r_L_tmp(rect_tmp);
-//            if(count%30==0)
-//                topview.setTo(cv::Scalar(0,0,0,0));
+            if(count%25==0)
+                topview.setTo(cv::Scalar(0,0,0,0));
             //qDebug() << objects[i].avg_Z;
-//            if(abs(objects[i].avg_Z-temp_z[i])>3000 || abs(objects[i].avg_X-temp_x[i])>5000||count==0){
+            //            if(abs(objects[i].avg_Z-temp_z[i])>3000 || abs(objects[i].avg_X-temp_x[i])>5000||count==0){
             if(fg_avgfilter){
                 temp_x[i]=objects[i].avg_X;
                 temp_z[i]=objects[i].avg_Z;
-                if(count%10==0){
-                topview.setTo(cv::Scalar(0,0,0,0));
-                cv::circle(topview,cv::Point(0.5*270+int(objects[i].avg_X/100),750-objects[i].avg_Z/3000*750),8,cv::Scalar(255,255,255,255),-1);
-                std::string distance_tag = QString::number(objects[i].avg_Z / 100.0, 'g', range_precision).toStdString() + " M";
-                cv::putText(topview,distance_tag,cv::Point(0.5*270+int(objects[i].avg_X/100)+20,750-objects[i].avg_Z/3000*750),cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar(0, 0, 0, 255));
-}
+                if(count%20==0){
+                    //                topview.setTo(cv::Scalar(0,0,0,0));
+                    cv::circle(topview,cv::Point(0.5*270+int(objects[i].avg_X/1080*270),750-objects[i].avg_Z/3000*750),8,cv::Scalar(255,255,255,255),-1);
+                    std::string distance_tag = QString::number(objects[i].avg_Z / 100.0, 'g', range_precision).toStdString() + " M";
+                    cv::putText(topview,distance_tag,cv::Point(0.5*270+int(objects[i].avg_X/1080*270)+20,750-objects[i].avg_Z/3000*750),cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar(0, 0, 0, 255));
                 }
+            }
 
             else{
                 //cv::circle(topview,cv::Point(0.5*270+temp_x[i],710-temp_z[i]/3000*710),8,cv::Scalar(255,0,0,255),-1);
                 //topview.setTo(cv::Scalar(0,0,0,0));
                 //cv::circle(topview,cv::Point(0.5*270+int(objects[i].avg_X/100),710-objects[i].avg_Z/3000*710),8,cv::Scalar(255,255,255,255),-1);
-}
+            }
 
-//            if(count%20==0)
+            //            if(count%20==0)
 
             count++;
 

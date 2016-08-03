@@ -118,9 +118,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->radioButton_BM->setEnabled(true);
     ui->radioButton_BM->setChecked(true);
     si->sv->match_mode = SV::STEREO_MATCH::BM;
-//    ui->radioButton_SGBM->setEnabled(true);
-//    ui->radioButton_SGBM->setChecked(true);
-//    match_mode = SV::STEREO_MATCH::SGBM;
+    //    ui->radioButton_SGBM->setEnabled(true);
+    //    ui->radioButton_SGBM->setChecked(true);
+    //    match_mode = SV::STEREO_MATCH::SGBM;
 #endif
 
     // Initialization
@@ -183,18 +183,21 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->label_sv_detected, SIGNAL(mXY(int, int)), this, SLOT(mouseXY(int, int)));
     // ========================================= End
 
-        // rig selection (before initialFusedTopView())
-        if (ui->radioButton_vehicle_cart->isChecked())
-            on_radioButton_vehicle_cart_clicked();
-        else if (ui->radioButton_vehicle_car->isChecked())
-            on_radioButton_vehicle_car_clicked();
-        else if (ui->radioButton_vehicle_tractor->isChecked())
-            on_radioButton_vehicle_tractor_clicked();
+    // rig selection (before initialFusedTopView())
+    if (ui->radioButton_vehicle_cart->isChecked())
+        on_radioButton_vehicle_cart_clicked();
+    else if (ui->radioButton_vehicle_car->isChecked())
+        on_radioButton_vehicle_car_clicked();
+    else if (ui->radioButton_vehicle_tractor->isChecked())
+        on_radioButton_vehicle_tractor_clicked();
 
     re.setParentFolder("data");
     ui->label_radar_data->setVisible(0);
     ui->label_radar_data_BG->setVisible(0);
-
+    //DC Motor
+    right_dcmotor = new dcmotor();
+    left_dcmotor = new dcmotor();
+    ui->pushButton_stop->setStyleSheet("color: rgb(255, 0, 0);");
 
 }
 
@@ -234,7 +237,7 @@ void MainWindow::closeEvent(QCloseEvent *)
 
 void MainWindow::keyPressEvent(QKeyEvent *ev)
 {
-//    std::cout<<ev->key()<<std::endl;
+    //    std::cout<<ev->key()<<std::endl;
     int index = ui->tabWidget_display->currentIndex();
     int index_1 = ui->tabWidget->currentIndex();
 
@@ -243,7 +246,7 @@ void MainWindow::keyPressEvent(QKeyEvent *ev)
     if (ev->modifiers() & Qt::ControlModifier) {
         ui->centralWidget->setFocus();
         key_in += Qt::CTRL;
-//        std::cout<<key_in<<", "<<QKeySequence(key_in).toString(QKeySequence::NativeText).toStdString()<<std::endl;
+        //        std::cout<<key_in<<", "<<QKeySequence(key_in).toString(QKeySequence::NativeText).toStdString()<<std::endl;
         if (QKeySequence(key_in).matches(QKeySequence("Ctrl+Up")) == QKeySequence::ExactMatch)
             ui->tabWidget_display->setCurrentIndex(index - 1);
         else if (QKeySequence(key_in).matches(QKeySequence("Ctrl+Down")) == QKeySequence::ExactMatch)
@@ -456,31 +459,31 @@ void MainWindow::paramUpdate()
         cur_lrf_res = 1;
 
     if (fin_cam_param->port_L           != ui->comboBox_cam_device_index_L->currentIndex() ||
-        fin_cam_param->port_R           != ui->comboBox_cam_device_index_R->currentIndex() ||
-        fin_cam_param->cam_focal_length != ui->comboBox_camera_focal_length->currentIndex() ||
-        fin_cam_param->focal_length     != ui->label_sv_focal_length->text().toDouble() ||
-        fin_cam_param->rig_height       != ui->label_sv_rig_height->text().toDouble() ||
-        fin_cam_param->base_line        != ui->lineEdit_base_line->text().toDouble() ||
-        fin_SGBM->pre_filter_cap        != si->sv->param_sgbm->pre_filter_cap ||
-        fin_SGBM->SAD_window_size       != si->sv->param_sgbm->SAD_window_size ||
-        fin_SGBM->min_disp              != si->sv->param_sgbm->min_disp ||
-        fin_SGBM->num_of_disp           != si->sv->param_sgbm->num_of_disp ||
-        fin_SGBM->uniquenese_ratio      != si->sv->param_sgbm->uniquenese_ratio ||
-        fin_SGBM->speckle_window_size   != si->sv->param_sgbm->speckle_window_size ||
-        fin_SGBM->speckle_range         != si->sv->param_sgbm->speckle_range ||
-        fin_BM->pre_filter_size         != si->sv->param_bm->pre_filter_size ||
-        fin_BM->pre_filter_cap          != si->sv->param_bm->pre_filter_cap ||
-        fin_BM->SAD_window_size         != si->sv->param_bm->SAD_window_size ||
-        fin_BM->min_disp                != si->sv->param_bm->min_disp ||
-        fin_BM->num_of_disp             != si->sv->param_bm->num_of_disp ||
-        fin_BM->texture_thresh          != si->sv->param_bm->texture_thresh ||
-        fin_BM->uniquenese_ratio        != si->sv->param_bm->uniquenese_ratio ||
-        fin_BM->speckle_window_size     != si->sv->param_bm->speckle_window_size ||
-        fin_BM->speckle_range           != si->sv->param_bm->speckle_range ||
-        fin_lrf_port                    != ui->comboBox_lrf_com->currentIndex() ||
-        fin_lrf_baud_rate               != ui->comboBox_lrf_baudRate->currentIndex() ||
-        fin_lrf_scale                   != ui->spinBox_lrf_scale->value() ||
-        fin_lrf_res                     != cur_lrf_res) {
+            fin_cam_param->port_R           != ui->comboBox_cam_device_index_R->currentIndex() ||
+            fin_cam_param->cam_focal_length != ui->comboBox_camera_focal_length->currentIndex() ||
+            fin_cam_param->focal_length     != ui->label_sv_focal_length->text().toDouble() ||
+            fin_cam_param->rig_height       != ui->label_sv_rig_height->text().toDouble() ||
+            fin_cam_param->base_line        != ui->lineEdit_base_line->text().toDouble() ||
+            fin_SGBM->pre_filter_cap        != si->sv->param_sgbm->pre_filter_cap ||
+            fin_SGBM->SAD_window_size       != si->sv->param_sgbm->SAD_window_size ||
+            fin_SGBM->min_disp              != si->sv->param_sgbm->min_disp ||
+            fin_SGBM->num_of_disp           != si->sv->param_sgbm->num_of_disp ||
+            fin_SGBM->uniquenese_ratio      != si->sv->param_sgbm->uniquenese_ratio ||
+            fin_SGBM->speckle_window_size   != si->sv->param_sgbm->speckle_window_size ||
+            fin_SGBM->speckle_range         != si->sv->param_sgbm->speckle_range ||
+            fin_BM->pre_filter_size         != si->sv->param_bm->pre_filter_size ||
+            fin_BM->pre_filter_cap          != si->sv->param_bm->pre_filter_cap ||
+            fin_BM->SAD_window_size         != si->sv->param_bm->SAD_window_size ||
+            fin_BM->min_disp                != si->sv->param_bm->min_disp ||
+            fin_BM->num_of_disp             != si->sv->param_bm->num_of_disp ||
+            fin_BM->texture_thresh          != si->sv->param_bm->texture_thresh ||
+            fin_BM->uniquenese_ratio        != si->sv->param_bm->uniquenese_ratio ||
+            fin_BM->speckle_window_size     != si->sv->param_bm->speckle_window_size ||
+            fin_BM->speckle_range           != si->sv->param_bm->speckle_range ||
+            fin_lrf_port                    != ui->comboBox_lrf_com->currentIndex() ||
+            fin_lrf_baud_rate               != ui->comboBox_lrf_baudRate->currentIndex() ||
+            fin_lrf_scale                   != ui->spinBox_lrf_scale->value() ||
+            fin_lrf_res                     != cur_lrf_res) {
         QMessageBox::StandardButton reply = QMessageBox::question(0, "New change", "Parameters were changed, save the new ones?", QMessageBox::Yes | QMessageBox::No);
         if (reply == QMessageBox::Yes)
             paramWrite();
@@ -590,7 +593,7 @@ void MainWindow::radarDisplayTopViewBG()
 
         ui->label_radar_data_BG->setPixmap(QPixmap::fromImage(QImage::QImage(si->rc->img_radar_BG.data, si->rc->img_radar_BG.cols, si->rc->img_radar_BG.rows, si->rc->img_radar_BG.step, QImage::Format_RGB888)));
     }
-//    cv::imshow("rc", si->rc->topview_BG);
+    //    cv::imshow("rc", si->rc->topview_BG);
 }
 
 void MainWindow::on_spinBox_radar_topview_r_valueChanged(int arg1)
@@ -715,7 +718,7 @@ void MainWindow::svDisplay(cv::Mat *img_L, cv::Mat *img_R, cv::Mat *disp, cv::Ma
         ui->label_sv_frame_count_2->setText(QString::number(current_frame_count) + " frames");
     }
 
-    if (ui->checkBox_do_depth->isChecked()) {    
+    if (ui->checkBox_do_depth->isChecked()) {
         lock_sv.lockForRead();
         if (ui->checkBox_pseudo_color->isChecked()) {
             ui->label_disp->setPixmap(QPixmap::fromImage(QImage::QImage(disp_pseudo->data, disp_pseudo->cols, disp_pseudo->rows, disp_pseudo->step, QImage::Format_RGB888)).scaled(IMG_DIS_DISP_W, IMG_DIS_DISP_H));
@@ -1176,21 +1179,21 @@ void MainWindow::on_lineEdit_sv_focal_length_returnPressed()
 
 void MainWindow::on_pushButton_lrf_record_data_clicked()
 {
-//    lrf_temp.clear();
-//    for (int i = 0; i < LENGTH_DATA; i++) {
-//        lrf_temp.push_back(lrf_data[i]);
-//    }
-//    display_lrf_3D.push_back(lrf_temp);
+    //    lrf_temp.clear();
+    //    for (int i = 0; i < LENGTH_DATA; i++) {
+    //        lrf_temp.push_back(lrf_data[i]);
+    //    }
+    //    display_lrf_3D.push_back(lrf_temp);
 
     fp1 = fopen("D_lrf.txt", "a");
     fg_lrf_record = true;
-//    FILE* fp1;
-//    fp1 = fopen("D_lrf.txt", "a");
-//    for (int i = 0; i < LENGTH_DATA; i++) {
-//        fprintf(fp1, "%f ", lrf_data[i]);
-//    }
-//    fprintf(fp1, "\n");
-//    fclose(fp1);
+    //    FILE* fp1;
+    //    fp1 = fopen("D_lrf.txt", "a");
+    //    for (int i = 0; i < LENGTH_DATA; i++) {
+    //        fprintf(fp1, "%f ", lrf_data[i]);
+    //    }
+    //    fprintf(fp1, "\n");
+    //    fclose(fp1);
 }
 
 void MainWindow::on_pushButton_sv_record_data_clicked()
@@ -1273,9 +1276,9 @@ void MainWindow::readFromTxt(QString file_name, cv::Mat *output)
         short int* ptr = output->ptr<short int>(r);
         for (int c = 0; c < col; c++) {
             ptr[c] = img_d[r][c];
-//            std::cout<<ptr[c]<<" ";
+            //            std::cout<<ptr[c]<<" ";
         }
-//        std::cout<<std::endl;
+        //        std::cout<<std::endl;
     }
 }
 
@@ -1312,9 +1315,9 @@ void MainWindow::on_pushButton_sv_read_disp_clicked()
             else {
                 hist.ptr<long int>(0)[va]++;
             }
-//            std::cout<<ptr[c]<<" ";
+            //            std::cout<<ptr[c]<<" ";
         }
-//        std::cout<<std::endl;
+        //        std::cout<<std::endl;
     }
     cv::imshow("[sv] new", img_sv_r);
     cv::imwrite("D_sv_disp.jpg", img_sv_r);
@@ -1336,10 +1339,10 @@ void MainWindow::on_pushButton_sv_read_disp_clicked()
         }
     }
 
-//    int img_total = 0;
-//    for (int i = 0; i < 3000; i++) {
-//        img_total += hist_sort.ptr<long int>(0)[i];
-//    }
+    //    int img_total = 0;
+    //    for (int i = 0; i < 3000; i++) {
+    //        img_total += hist_sort.ptr<long int>(0)[i];
+    //    }
 
     cv::Mat img_sv_separate;
     img_sv_separate.create(img_sv.rows, img_sv.cols, CV_8UC1);
@@ -1407,9 +1410,9 @@ void MainWindow::on_pushButton_lrf_read_range_clicked()
             if (ratio > 0.5 || ratio_1 > 0.5) {
                 ptr_p[c] = 255;
             }
-//            std::cout<<ratio<<" ";
+            //            std::cout<<ratio<<" ";
         }
-//        std::cout<<std::endl;
+        //        std::cout<<std::endl;
     }
 
     cv::imshow("proc lrf", img_lrf_proc);
@@ -1447,12 +1450,12 @@ void MainWindow::on_pushButton_lrf_read_range_2_clicked()
             else if (va < 0.0)
                 va = 0;
             ptr_1[c] = (int)(va);
-//            std::cout<<va<<"/"<<p<<" ";
+            //            std::cout<<va<<"/"<<p<<" ";
 
         }
-//        std::cout<<std::endl;
+        //        std::cout<<std::endl;
     }
-//    std::cout<<std::endl<<minn<<", "<<maxx<<std::endl;
+    //    std::cout<<std::endl<<minn<<", "<<maxx<<std::endl;
 
     cv::imshow("[lrf] new", img_lrf_r);
     cv::imwrite("D_lrf.jpg", img_lrf_r);
@@ -1608,7 +1611,7 @@ void MainWindow::on_pushButton_stop_all_clicked()
 {
     on_pushButton_cam_stop_clicked();
     on_pushButton_radar_bus_off_clicked();
-//    re.tr->file.close();
+    //    re.tr->file.close();
 }
 
 void MainWindow::on_actionShortcut_triggered()
@@ -1952,3 +1955,282 @@ void MainWindow::guiDisplay(int type, bool fg_on)
     qApp->processEvents();
 }
 
+
+void MainWindow::on_pushButton_left_clicked()
+{
+    left_dcmotor->Open(ui->comboBox_COMport_left->currentText(),ui->comboBox_baudrate_left->currentText().toInt());
+
+
+    if (left_dcmotor->isOpen())
+        ui->textBrowser->append(
+                    "Left DC Motor: "
+                    + ui->comboBox_COMport_left->currentText()
+                    + " Baud:" + ui->comboBox_baudrate_left->currentText()
+                    + " is opened");
+    else
+        ui->textBrowser->append("[Error] Left DC Motor: cannot open " +
+                                ui->comboBox_COMport_left->currentText()
+                                + " Baud:" + ui->comboBox_baudrate_left->currentText());
+}
+
+void MainWindow::on_pushButton_right_clicked()
+{
+    right_dcmotor->Open(ui->comboBox_COMport_right->currentText(),ui->comboBox_baudrate_right->currentText().toInt());
+    if (right_dcmotor->isOpen())
+        ui->textBrowser->append(
+                    "Right DC Motor: "
+                    + ui->comboBox_COMport_right->currentText()
+                    + " Baud:" + ui->comboBox_baudrate_right->currentText()
+                    + " is opened");
+    else
+        ui->textBrowser->append("[Error] Right DC Motor: cannot open " +
+                                ui->comboBox_COMport_right->currentText()
+                                + " Baud:" + ui->comboBox_baudrate_right->currentText());
+}
+
+void MainWindow::on_pushButton_initial_clicked()
+{
+    ui->pushButton_left->click();
+    ui->pushButton_right->click();
+    if (right_dcmotor->isOpen() && left_dcmotor->isOpen())
+    {
+        left_dcmotor->SetHome();
+        right_dcmotor->SetHome();
+    }
+    else
+    {
+        ui->textBrowser->append(QString("[Error] Please Open the both dcmotor first right: %1, left: %2")
+                                .arg(right_dcmotor->isOpen())
+                                .arg(left_dcmotor->isOpen()));
+    }
+}
+
+void MainWindow::on_pushButton_R_clicked()
+{
+    if (right_dcmotor->isOpen() && left_dcmotor->isOpen())
+    {
+        right_dcmotor->D(ui->doubleSpinBox_velocity->value()*-1);
+        left_dcmotor->D(ui->doubleSpinBox_velocity->value());
+        ui->textBrowser->append(QString("Run"));
+    }
+    else
+    {
+        ui->textBrowser->append(QString("[Error] Please Open the both dcmotor first right: %1, left: %2")
+                                .arg(right_dcmotor->isOpen())
+                                .arg(left_dcmotor->isOpen()));
+    }
+}
+
+void MainWindow::on_pushButton_D_clicked()
+{
+    if (right_dcmotor->isOpen() && left_dcmotor->isOpen())
+    {
+        right_dcmotor->D(ui->doubleSpinBox_velocity->value());
+        left_dcmotor->D(ui->doubleSpinBox_velocity->value()*-1);
+        ui->textBrowser->append(QString("Run"));
+    }
+    else
+    {
+        ui->textBrowser->append(QString("[Error] Please Open the both dcmotor first right: %1, left: %2")
+                                .arg(right_dcmotor->isOpen())
+                                .arg(left_dcmotor->isOpen()));
+    }
+}
+
+void MainWindow::on_pushButton_stop_clicked()
+{
+    if (right_dcmotor->isOpen() && left_dcmotor->isOpen())
+    {
+        right_dcmotor->stop();
+        left_dcmotor->stop();
+        ui->textBrowser->append(QString("Stop"));
+    }
+    else
+    {
+        ui->textBrowser->append(QString("[Error] Please Open the both dcmotor first right: %1, left: %2")
+                                .arg(right_dcmotor->isOpen())
+                                .arg(left_dcmotor->isOpen()));
+    }
+}
+
+void MainWindow::on_pushButton_front_clicked()
+{
+    if (right_dcmotor->isOpen() && left_dcmotor->isOpen())
+    {
+        ui->textBrowser->append(QString("Go Forward %1m").arg(ui->doubleSpinBox_distance->value()));
+        GoForward(ui->doubleSpinBox_distance->value(),ui->doubleSpinBox_velocity->value());
+    }
+    else
+    {
+        ui->textBrowser->append(QString("[Error] Please Open the both dcmotor first right: %1, left: %2")
+                                .arg(right_dcmotor->isOpen())
+                                .arg(left_dcmotor->isOpen()));
+    }
+}
+
+void MainWindow::GoForward(double distance_m, double speed)
+{
+    right_dcmotor->SetMaxVelocity(speed);
+    left_dcmotor->SetMaxVelocity(-speed);
+    double pi=3.14159265;
+    // [encoder:4096]  [motor Gearhead:14]  [wheel gear:3.333] [wheel diameter:0.325m]
+    // calibration coeffient: y = 0.9487x
+    int value = static_cast<int>((4096*3.333*14)*(distance_m/0.325)/(pi)/0.9487);
+    //    std::cout << "value = " << value << std::endl;
+    right_dcmotor->RotateRelativeDistancce(value);
+    left_dcmotor->RotateRelativeDistancce(-value);
+}
+
+void MainWindow::GoBackward(double distance_m, double speed)
+{
+    right_dcmotor->SetMaxVelocity(-speed);
+    left_dcmotor->SetMaxVelocity(speed);
+    double pi=3.14159265;
+    // [encoder:4096]  [motor Gearhead:14]  [wheel gear:3.333] [wheel diameter:0.325m]
+    // calibration coeffient: y = 0.9487x
+    int value = static_cast<int>((4096*3.333*14)*(distance_m/0.325)/(pi)/0.9487);
+    //    std::cout << "value = " << value << std::endl;
+    right_dcmotor->RotateRelativeDistancce(-value);
+    left_dcmotor->RotateRelativeDistancce(value);
+}
+
+void MainWindow::TurnLeft(double angle, double speed)
+{
+    if (angle > 0 && angle <= 360)
+    {
+        right_dcmotor->SetMaxVelocity(speed);
+        left_dcmotor->SetMaxVelocity(speed);
+
+        // distance between wheels = 0.57m
+        // [encoder:4096]  [motor Gearhead:14]  [wheel gear:3.333] [wheel diameter:0.325m]
+        // calibration coeffient: y = 0.9487x
+        int value = static_cast<int>((4096*3.333*14)*(0.57/0.325)*angle/360/0.9487);
+        right_dcmotor->RotateRelativeDistancce(value);
+        left_dcmotor->RotateRelativeDistancce(value);
+    }
+}
+
+void MainWindow::TurnRight(double angle, double speed)
+{
+    if (angle > 0 && angle <= 360)
+    {
+        right_dcmotor->SetMaxVelocity(-speed);
+        left_dcmotor->SetMaxVelocity(-speed);
+
+        // distance between wheels = 0.57m
+        // [encoder:4096]  [motor Gearhead:14]  [wheel gear:3.333] [wheel diameter:0.325m]
+        // calibration coeffient: y = 0.9487x
+        int value = static_cast<int>((4096*3.333*14)*(0.57/0.325)*angle/360/0.9487);
+        right_dcmotor->RotateRelativeDistancce(-value);
+        left_dcmotor->RotateRelativeDistancce(-value);
+    }
+}
+
+void MainWindow::TurnLeftOneLeg(double angle, double speed)
+{
+    if (angle > 0 && angle <= 360)
+    {
+        right_dcmotor->SetMaxVelocity(speed);
+        left_dcmotor->stop();
+
+        // distance between wheels = 0.57m
+        // [encoder:4096]  [motor Gearhead:14]  [wheel gear:3.333] [wheel diameter:0.325m]
+        // calibration coeffient: y = 0.9487x
+        int value = static_cast<int>((4096*3.333*14)*(0.57/0.325)*angle/360/0.9487*2);
+        right_dcmotor->RotateRelativeDistancce(value);
+    }
+}
+
+void MainWindow::TurnRightOneLeg(double angle, double speed)
+{
+    if (angle > 0 && angle <= 360)
+    {
+        right_dcmotor->stop();
+        left_dcmotor->SetMaxVelocity(speed);
+
+        // distance between wheels = 0.57m
+        // [encoder:4096]  [motor Gearhead:14]  [wheel gear:3.333] [wheel diameter:0.325m]
+        // calibration coeffient: y = 0.9487x
+        int value = static_cast<int>((4096*3.333*14)*(0.57/0.325)*angle/360/0.9487*2);
+        left_dcmotor->RotateRelativeDistancce((-1)*value);
+    }
+}
+
+void MainWindow::on_pushButton_back_clicked()
+{
+    if (right_dcmotor->isOpen() && left_dcmotor->isOpen())
+    {
+        ui->textBrowser->append(QString("Go Backward %1m").arg(ui->doubleSpinBox_distance->value()));
+        GoBackward(ui->doubleSpinBox_distance->value(),ui->doubleSpinBox_velocity->value());}
+    else
+    {
+        ui->textBrowser->append(QString("[Error] Please Open the both dcmotor first right: %1, left: %2")
+                                .arg(right_dcmotor->isOpen()).arg(left_dcmotor->isOpen()));
+    }
+}
+
+void MainWindow::on_pushButton_turn_left_clicked()
+{
+    if (right_dcmotor->isOpen() && left_dcmotor->isOpen())
+    {
+        ui->textBrowser->append(QString("Turn Left %1 degrees").arg(ui->doubleSpinBox_angle->value()));
+        TurnLeft(ui->doubleSpinBox_angle->value(),
+                 ui->doubleSpinBox_velocity->value());
+    }
+    else
+    {
+        ui->textBrowser->append(QString("[Error] Please Open the both dcmotor first right: %1, left: %2")
+                                .arg(right_dcmotor->isOpen())
+                                .arg(left_dcmotor->isOpen()));
+    }
+}
+void MainWindow::on_pushButton_trun_right_clicked()
+{
+    if (right_dcmotor->isOpen() && left_dcmotor->isOpen())
+    {
+        ui->textBrowser->append(QString("Turn Right %1 degrees").arg(ui->doubleSpinBox_angle->value()));
+        TurnRight(ui->doubleSpinBox_angle->value(),ui->doubleSpinBox_velocity->value());
+    }
+    else
+    {
+        ui->textBrowser->append(QString("[Error] Please Open the both dcmotor first right: %1, left: %2")
+                                .arg(right_dcmotor->isOpen())
+                                .arg(left_dcmotor->isOpen()));
+    }
+}
+
+void MainWindow::on_pushButton_turn_one_left_clicked()
+{
+    if (right_dcmotor->isOpen() && left_dcmotor->isOpen())
+    {
+        ui->textBrowser->append(QString("One Left %1 degrees").arg(ui->doubleSpinBox_angle->value()));
+        TurnLeftOneLeg(ui->doubleSpinBox_angle->value(),ui->doubleSpinBox_velocity->value());
+    }
+    else
+    {
+        ui->textBrowser->append(QString("[Error] Please Open the both dcmotor first right: %1, left: %2")
+                                .arg(right_dcmotor->isOpen())
+                                .arg(left_dcmotor->isOpen()));
+    }
+}
+
+void MainWindow::on_pushButton_trun_one_right_clicked()
+{
+    if (right_dcmotor->isOpen() && left_dcmotor->isOpen())
+    {
+        ui->textBrowser->append(QString("One Right %1 degrees").arg(ui->doubleSpinBox_angle->value()));
+        TurnRightOneLeg(ui->doubleSpinBox_angle->value(),ui->doubleSpinBox_velocity->value());
+
+    }
+    else
+    {
+        ui->textBrowser->append(QString("[Error] Please Open the both dcmotor first right: %1, left: %2")
+                                .arg(right_dcmotor->isOpen())
+                                .arg(left_dcmotor->isOpen()));
+    }
+}
+
+void MainWindow::on_pushButton_clearlog_clicked()
+{
+    ui->textBrowser->clear();
+}

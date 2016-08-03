@@ -35,7 +35,8 @@ SOURCES += main.cpp\
     objectrecognition.cpp \
     collisionAvoidance/AStar.cpp \
     collisionAvoidance/collisionavoidance.cpp \
-    objectTracking/objectmatching.cpp
+    objectTracking/objectmatching.cpp \
+    dcmotor.cpp
 
 HEADERS  += mainwindow.h \
             lrf_controller.h \
@@ -61,7 +62,8 @@ HEADERS  += mainwindow.h \
     objectrecognition.h \
     collisionAvoidance/AStar.h \
     collisionAvoidance/collisionavoidance.h \
-    objectTracking/objectmatching.h
+    objectTracking/objectmatching.h \
+    dcmotor.h
 
 FORMS    += mainwindow.ui \
     calibrationform.ui \
