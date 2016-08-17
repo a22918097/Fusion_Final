@@ -190,6 +190,8 @@ MainWindow::MainWindow(QWidget *parent) :
         on_radioButton_vehicle_car_clicked();
     else if (ui->radioButton_vehicle_tractor->isChecked())
         on_radioButton_vehicle_tractor_clicked();
+    else if (ui->radioButton_vehicle_robot->isChecked())
+        on_radioButton_vehicle_robot_clicked();
 
     re.setParentFolder("data");
     ui->label_radar_data->setVisible(0);
@@ -531,6 +533,13 @@ void MainWindow::on_radioButton_vehicle_car_clicked()
 void MainWindow::on_radioButton_vehicle_tractor_clicked()
 {
     si->chooseVehicle(VEHICLE::TRACTOR);
+
+    f_fused.waitForFinished();
+    updateFusedTopView();
+}
+void MainWindow::on_radioButton_vehicle_robot_clicked()
+{
+    si->chooseVehicle(VEHICLE::ROBOT);
 
     f_fused.waitForFinished();
     updateFusedTopView();
@@ -2234,3 +2243,4 @@ void MainWindow::on_pushButton_clearlog_clicked()
 {
     ui->textBrowser->clear();
 }
+

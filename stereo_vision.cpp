@@ -1136,7 +1136,7 @@ void stereo_vision::pointProjectImage()
             objects[i].pc.range = sqrt(pow((double)(objects[i].avg_Z), 2) + pow((double)(objects[i].avg_X), 2));
             cv::Rect rect_tmp = cv::Rect(objects[i].tl.second, objects[i].tl.first, (objects[i].br.second - objects[i].tl.second), (objects[i].br.first - objects[i].tl.first));
             objects[i].img = img_r_L_tmp(rect_tmp);
-            if(count%25==0)
+            if(count%19==0)
                 topview.setTo(cv::Scalar(0,0,0,0));
             //qDebug() << objects[i].avg_Z;
             //            if(abs(objects[i].avg_Z-temp_z[i])>3000 || abs(objects[i].avg_X-temp_x[i])>5000||count==0){

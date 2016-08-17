@@ -1233,7 +1233,7 @@ parameters</string>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="tab_7">
      <attribute name="title">
@@ -1604,45 +1604,6 @@ parameters</string>
        <string>Detected image</string>
       </property>
      </widget>
-     <widget class="QWidget" name="layoutWidget">
-      <property name="geometry">
-       <rect>
-        <x>810</x>
-        <y>10</y>
-        <width>160</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_22">
-       <item row="0" column="1">
-        <widget class="QRadioButton" name="radioButton_vehicle_car">
-         <property name="text">
-          <string>Car</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QRadioButton" name="radioButton_vehicle_cart">
-         <property name="text">
-          <string>Cart</string>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QRadioButton" name="radioButton_vehicle_tractor">
-         <property name="text">
-          <string>Tractor</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
      <widget class="QLabel" name="label_gui_BG">
       <property name="geometry">
        <rect>
@@ -1737,6 +1698,55 @@ coming</string>
        <string>Frame count</string>
       </property>
      </widget>
+     <widget class="QWidget" name="">
+      <property name="geometry">
+       <rect>
+        <x>811</x>
+        <y>12</y>
+        <width>217</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_22">
+       <item row="0" column="0">
+        <widget class="QRadioButton" name="radioButton_vehicle_cart">
+         <property name="text">
+          <string>Cart</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QRadioButton" name="radioButton_vehicle_car">
+         <property name="text">
+          <string>Car</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QRadioButton" name="radioButton_vehicle_tractor">
+         <property name="text">
+          <string>Tractor</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QRadioButton" name="radioButton_vehicle_robot">
+         <property name="text">
+          <string>Robot</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
      <zorder>label_gui_BG</zorder>
      <zorder>layoutWidget</zorder>
      <zorder>label_fusion_BG</zorder>
@@ -1750,6 +1760,7 @@ coming</string>
      <zorder>label_gui_left_oncoming</zorder>
      <zorder>label_gui_right_oncoming</zorder>
      <zorder>label_sv_frame_count_2</zorder>
+     <zorder>radioButton_vehicle_robot</zorder>
     </widget>
     <widget class="QWidget" name="tab_10">
      <attribute name="title">

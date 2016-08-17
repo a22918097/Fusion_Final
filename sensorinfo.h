@@ -40,7 +40,8 @@ namespace VEHICLE {
 enum {
     CART,
     CAR,
-    TRACTOR
+    TRACTOR,
+    ROBOT
 };
 }
 

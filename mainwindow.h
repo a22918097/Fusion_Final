@@ -415,6 +415,7 @@ private slots:
     void on_pushButton_turn_one_left_clicked();
     void on_pushButton_trun_one_right_clicked();
     void on_pushButton_clearlog_clicked();
+    void on_radioButton_vehicle_robot_clicked();
 };
 
 // Mouse control ==========

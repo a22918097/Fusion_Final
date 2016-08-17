@@ -23,7 +23,7 @@ SensorInfo::SensorInfo()
 
     ot_fused = new ObjectTracking();
     // max. size of detected objects
-//    ot_fused->initialze(sv->objSize() + rc->objSize());
+    //    ot_fused->initialze(sv->objSize() + rc->objSize());
 
     // object macthing
     initializeObjectMatching(size_data_fused);
@@ -205,7 +205,7 @@ void SensorInfo::chooseVehicle(int vehicle_type)
     switch (vehicle_type) {
     case VEHICLE::CART:
         // choose cart
-        vehicle.width = 43;
+        vehicle.width = 43;//cm
         vehicle.length = 43;
         vehicle.head_pos = vehicle.length / 2;
 
@@ -235,6 +235,8 @@ void SensorInfo::chooseVehicle(int vehicle_type)
         sensors[SENSOR::RADAR].location.pos = cv::Point2f(0, 301 - vehicle.length / 2);
         sensors[SENSOR::RADAR].location.theta = 0.0;
         break;
+
+
     }
 
     vehicle.width_pixel = vehicle.width * ratio;
@@ -399,17 +401,17 @@ void SensorInfo::dataMatching()
     cv::imshow("fusion matched comparision", fused_topview_cp);
 
     for (int p = 0; p < size_data_fused; p++) {
-    data_fused_prev[p].det_mode      = data_fused[p].det_mode;
-    data_fused_prev[p].ids.now     = data_fused[p].ids.now;
-    data_fused_prev[p].img.release();
-    data_fused_prev[p].img           = data_fused[p].img.clone();
-    data_fused_prev[p].rect_f        = cv::Rect(data_fused[p].rect_f.tl().x, data_fused[p].rect_f.tl().y, data_fused[p].rect_f.width, data_fused[p].rect_f.height);
-    data_fused_prev[p].plot_pt_f.x   = data_fused[p].plot_pt_f.x;
-    data_fused_prev[p].plot_pt_f.y   = data_fused[p].plot_pt_f.y;
-    data_fused_prev[p].pc.range      = data_fused[p].pc.range;
-    data_fused_prev[p].pc.angle      = data_fused[p].pc.angle;
-    data_fused_prev[p].pos.x         = data_fused[p].pos.x;
-    data_fused_prev[p].pos.y         = data_fused[p].pos.y;
+        data_fused_prev[p].det_mode      = data_fused[p].det_mode;
+        data_fused_prev[p].ids.now     = data_fused[p].ids.now;
+        data_fused_prev[p].img.release();
+        data_fused_prev[p].img           = data_fused[p].img.clone();
+        data_fused_prev[p].rect_f        = cv::Rect(data_fused[p].rect_f.tl().x, data_fused[p].rect_f.tl().y, data_fused[p].rect_f.width, data_fused[p].rect_f.height);
+        data_fused_prev[p].plot_pt_f.x   = data_fused[p].plot_pt_f.x;
+        data_fused_prev[p].plot_pt_f.y   = data_fused[p].plot_pt_f.y;
+        data_fused_prev[p].pc.range      = data_fused[p].pc.range;
+        data_fused_prev[p].pc.angle      = data_fused[p].pc.angle;
+        data_fused_prev[p].pos.x         = data_fused[p].pos.x;
+        data_fused_prev[p].pos.y         = data_fused[p].pos.y;
     }
 #endif
 }
@@ -543,11 +545,11 @@ void SensorInfo::dataTracking()
                 cv::Point2f pt_pre2t = ot_fused->ti[conti_id].info[last - 2].pos;
                 cv::Point2f pt_pre1t = ot_fused->ti[conti_id].info[last - 1].pos;
                 cv::Point2f pt_now = ot_fused->ti[conti_id].info[last].pos;
-//                qDebug()<<"size"<<last<<pt_pre2t.x<<pt_pre2t.y<<pt_pre1t.x<<pt_pre1t.y;
-//                for(int i = 0; i < last + 1; i++) {
-//                    qDebug()<<ot_fused->ti[conti_id].info[i].pos.x<<
-//                              ot_fused->ti[conti_id].info[i].pos.y;
-//                }
+                //                qDebug()<<"size"<<last<<pt_pre2t.x<<pt_pre2t.y<<pt_pre1t.x<<pt_pre1t.y;
+                //                for(int i = 0; i < last + 1; i++) {
+                //                    qDebug()<<ot_fused->ti[conti_id].info[i].pos.x<<
+                //                              ot_fused->ti[conti_id].info[i].pos.y;
+                //                }
                 float time_proc = 1.0 * sv->time_proc;
                 cv::Point2f vel_prev2t_1t = SensorBase::velEstimation(pt_pre1t, pt_pre2t, time_proc, VEL_ESTI::CM_PER_FRAME2M_PER_SEC);
                 cv::Point2f vel_prev1t_now = SensorBase::velEstimation(pt_now, pt_pre1t, time_proc, VEL_ESTI::CM_PER_FRAME2M_PER_SEC);
@@ -668,82 +670,82 @@ void SensorInfo::dataTracking()
     }
 
     // predict non-update obstacle
-//    for (int m = 0; m < ot_fused->ti.size(); m++) {
-//        if (ot_fused->ti[m].track_status != TRACK_STATUS::NO_TARGET && !ot_fused->ti[m].fg_update) {
-//            qDebug()<<"predict"<<m;
-//            lock_data_fused.lockForRead();
-//            int last = ot_fused->ti[m].info.size() - 1;
-//            if (last < 0 || (ot_fused->ti[m].info[last].vel.x == 0.0 && ot_fused->ti[m].info[last].vel.y == 0.0))
-//                continue;
-//            ObjectTracking::objectTrackingInfo info_new;
-//            info_new.ids.now   = ot_fused->ti[m].info[last].ids.now;
-//            info_new.det_mode  = ot_fused->ti[m].info[last].det_mode;
-//            info_new.img       = ot_fused->ti[m].info[last].img.clone();
-//            info_new.H_hist    = ot_fused->ti[m].info[last].H_hist.clone();
-//            info_new.pos       = cv::Point2f(ot_fused->ti[m].info[last].pos.x + 100.0 * ot_fused->ti[m].info[last].vel.x,
-//                                             ot_fused->ti[m].info[last].pos.y + 100.0 * ot_fused->ti[m].info[last].vel.y);
-//            qDebug()<<ot_fused->ti[m].info[last].pos.x<<ot_fused->ti[m].info[last].pos.y<<
-//                      info_new.pos.x<<info_new.pos.y;
-//            info_new.pc        = SensorBase::cart2Polarf(ot_fused->ti[m].info[last].pos);
-//            info_new.plot_pt_f = point2FusedTopView(info_new.pc);
-//            info_new.rect_f    = cv::Rect(info_new.plot_pt_f.x - 0.5 * ot_fused->ti[m].info[last].rect_f.width,
-//                                          info_new.plot_pt_f.y - 0.5 * ot_fused->ti[m].info[last].rect_f.height,
-//                                          ot_fused->ti[m].info[last].rect_f.width, ot_fused->ti[m].info[last].rect_f.height);
-//            lock_data_fused.unlock();
-//            // update object
-//            lock_ot_fused.lockForWrite();
-//            ot_fused->ti[m].info.push_back(info_new);
-//            ot_fused->ti[m].track_status = TRACK_STATUS::PREDICT_TARGET;
-//            ot_fused->ti[m].fg_update = true;
-//            ot_fused->ti[m].trajectory.push_back(SensorBase::PC(info_new.pc.range, info_new.pc.angle));
+    //    for (int m = 0; m < ot_fused->ti.size(); m++) {
+    //        if (ot_fused->ti[m].track_status != TRACK_STATUS::NO_TARGET && !ot_fused->ti[m].fg_update) {
+    //            qDebug()<<"predict"<<m;
+    //            lock_data_fused.lockForRead();
+    //            int last = ot_fused->ti[m].info.size() - 1;
+    //            if (last < 0 || (ot_fused->ti[m].info[last].vel.x == 0.0 && ot_fused->ti[m].info[last].vel.y == 0.0))
+    //                continue;
+    //            ObjectTracking::objectTrackingInfo info_new;
+    //            info_new.ids.now   = ot_fused->ti[m].info[last].ids.now;
+    //            info_new.det_mode  = ot_fused->ti[m].info[last].det_mode;
+    //            info_new.img       = ot_fused->ti[m].info[last].img.clone();
+    //            info_new.H_hist    = ot_fused->ti[m].info[last].H_hist.clone();
+    //            info_new.pos       = cv::Point2f(ot_fused->ti[m].info[last].pos.x + 100.0 * ot_fused->ti[m].info[last].vel.x,
+    //                                             ot_fused->ti[m].info[last].pos.y + 100.0 * ot_fused->ti[m].info[last].vel.y);
+    //            qDebug()<<ot_fused->ti[m].info[last].pos.x<<ot_fused->ti[m].info[last].pos.y<<
+    //                      info_new.pos.x<<info_new.pos.y;
+    //            info_new.pc        = SensorBase::cart2Polarf(ot_fused->ti[m].info[last].pos);
+    //            info_new.plot_pt_f = point2FusedTopView(info_new.pc);
+    //            info_new.rect_f    = cv::Rect(info_new.plot_pt_f.x - 0.5 * ot_fused->ti[m].info[last].rect_f.width,
+    //                                          info_new.plot_pt_f.y - 0.5 * ot_fused->ti[m].info[last].rect_f.height,
+    //                                          ot_fused->ti[m].info[last].rect_f.width, ot_fused->ti[m].info[last].rect_f.height);
+    //            lock_data_fused.unlock();
+    //            // update object
+    //            lock_ot_fused.lockForWrite();
+    //            ot_fused->ti[m].info.push_back(info_new);
+    //            ot_fused->ti[m].track_status = TRACK_STATUS::PREDICT_TARGET;
+    //            ot_fused->ti[m].fg_update = true;
+    //            ot_fused->ti[m].trajectory.push_back(SensorBase::PC(info_new.pc.range, info_new.pc.angle));
 
-//            // Kalman filter
-//            last = ot_fused->ti[m].info.size() - 1;
-//            if (last >= 2) {
-//                // (cm), (m/s), (m/s^2)
-//                cv::Point2f pt_pre2t = ot_fused->ti[m].info[last - 2].pos;
-//                cv::Point2f pt_pre1t = ot_fused->ti[m].info[last - 1].pos;
-//                cv::Point2f pt_now = ot_fused->ti[m].info[last].pos;
-//                float time_proc = 1.0 * sv->time_proc;
-//                cv::Point2f vel_prev2t_1t = SensorBase::velEstimation(pt_pre1t, pt_pre2t, time_proc, VEL_ESTI::CM_PER_FRAME2M_PER_SEC);
-//                cv::Point2f vel_prev1t_now = SensorBase::velEstimation(pt_now, pt_pre1t, time_proc, VEL_ESTI::CM_PER_FRAME2M_PER_SEC);
-//                cv::Point2f acc = cv::Point2f((vel_prev1t_now.x - vel_prev2t_1t.x) / time_proc, (vel_prev1t_now.y - vel_prev2t_1t.y) / time_proc);
-//                ot_fused->ti[m].info[last].vel.x = vel_prev1t_now.x;
-//                ot_fused->ti[m].info[last].vel.y = vel_prev1t_now.y;
-//                ot_fused->ti[m].info[last].acc.x = acc.x;
-//                ot_fused->ti[m].info[last].acc.y = acc.y;
+    //            // Kalman filter
+    //            last = ot_fused->ti[m].info.size() - 1;
+    //            if (last >= 2) {
+    //                // (cm), (m/s), (m/s^2)
+    //                cv::Point2f pt_pre2t = ot_fused->ti[m].info[last - 2].pos;
+    //                cv::Point2f pt_pre1t = ot_fused->ti[m].info[last - 1].pos;
+    //                cv::Point2f pt_now = ot_fused->ti[m].info[last].pos;
+    //                float time_proc = 1.0 * sv->time_proc;
+    //                cv::Point2f vel_prev2t_1t = SensorBase::velEstimation(pt_pre1t, pt_pre2t, time_proc, VEL_ESTI::CM_PER_FRAME2M_PER_SEC);
+    //                cv::Point2f vel_prev1t_now = SensorBase::velEstimation(pt_now, pt_pre1t, time_proc, VEL_ESTI::CM_PER_FRAME2M_PER_SEC);
+    //                cv::Point2f acc = cv::Point2f((vel_prev1t_now.x - vel_prev2t_1t.x) / time_proc, (vel_prev1t_now.y - vel_prev2t_1t.y) / time_proc);
+    //                ot_fused->ti[m].info[last].vel.x = vel_prev1t_now.x;
+    //                ot_fused->ti[m].info[last].vel.y = vel_prev1t_now.y;
+    //                ot_fused->ti[m].info[last].acc.x = acc.x;
+    //                ot_fused->ti[m].info[last].acc.y = acc.y;
 
-//                ot_fused->ti[m].kf.prediction = ot_fused->ti[m].kf.kf_core.predict();
-//                ot_fused->ti[m].kf.predictPt = cv::Point((int)(ot_fused->ti[m].kf.prediction.at<float>(0)), (int)(ot_fused->ti[m].kf.prediction.at<float>(1)));
+    //                ot_fused->ti[m].kf.prediction = ot_fused->ti[m].kf.kf_core.predict();
+    //                ot_fused->ti[m].kf.predictPt = cv::Point((int)(ot_fused->ti[m].kf.prediction.at<float>(0)), (int)(ot_fused->ti[m].kf.prediction.at<float>(1)));
 
-//                ot_fused->ti[m].kf.measurement.at<float>(0) = pt_now.x;
-//                ot_fused->ti[m].kf.measurement.at<float>(1) = pt_now.y;
-//                ot_fused->ti[m].kf.measurement += ot_fused->ti[m].kf.kf_core.measurementMatrix * ot_fused->ti[m].kf.state;
+    //                ot_fused->ti[m].kf.measurement.at<float>(0) = pt_now.x;
+    //                ot_fused->ti[m].kf.measurement.at<float>(1) = pt_now.y;
+    //                ot_fused->ti[m].kf.measurement += ot_fused->ti[m].kf.kf_core.measurementMatrix * ot_fused->ti[m].kf.state;
 
-//                ot_fused->ti[m].kf.estimated = ot_fused->ti[m].kf.kf_core.correct(ot_fused->ti[m].kf.measurement);
-//                ot_fused->ti[m].kf.statePt = cv::Point(ot_fused->ti[m].kf.estimated.at<float>(0), ot_fused->ti[m].kf.estimated.at<float>(1));
-//                ot_fused->ti[m].trajectory_kf.push_back(ot_fused->ti[m].kf.statePt);
-//                int last_kf = ot_fused->ti[m].trajectory_kf.size() - 1;
-//                if (last_kf >= 2) {
-//                    // (cm), (m/s), (m/s^2)
-//                    cv::Point2f pt_pre2t = cv::Point2f(ot_fused->ti[m].trajectory_kf[last_kf - 2]);
-//                    cv::Point2f pt_pre1t = cv::Point2f(ot_fused->ti[m].trajectory_kf[last_kf - 1]);
-//                    cv::Point2f pt_now = cv::Point2f(ot_fused->ti[m].trajectory_kf[last_kf]);
-//                    float time_proc = 1.0 * sv->time_proc;
-//                    cv::Point2f vel_prev2t_1t = SensorBase::velEstimation(pt_pre1t, pt_pre2t, time_proc, VEL_ESTI::CM_PER_FRAME2M_PER_SEC);
-//                    cv::Point2f vel_prev1t_now = SensorBase::velEstimation(pt_now, pt_pre1t, time_proc, VEL_ESTI::CM_PER_FRAME2M_PER_SEC);
-//                    cv::Point2f acc = cv::Point2f((vel_prev1t_now.x - vel_prev2t_1t.x) / time_proc, (vel_prev1t_now.y - vel_prev2t_1t.y) / time_proc);
-//                    ot_fused->ti[m].info[last].vel.x = vel_prev1t_now.x;
-//                    ot_fused->ti[m].info[last].vel.y = vel_prev1t_now.y;
-//                    ot_fused->ti[m].info[last].acc.x = acc.x;
-//                    ot_fused->ti[m].info[last].acc.y = acc.y;
-//                }
-//                randn(ot_fused->ti[m].kf.processNoise, cv::Scalar(0), cv::Scalar::all(sqrt(ot_fused->ti[m].kf.kf_core.processNoiseCov.at<float>(0, 0))));
-//                ot_fused->ti[m].kf.state = ot_fused->ti[m].kf.kf_core.transitionMatrix * ot_fused->ti[m].kf.state + ot_fused->ti[m].kf.processNoise;
-//            }
-//            lock_ot_fused.unlock();
-//        }
-//    }
+    //                ot_fused->ti[m].kf.estimated = ot_fused->ti[m].kf.kf_core.correct(ot_fused->ti[m].kf.measurement);
+    //                ot_fused->ti[m].kf.statePt = cv::Point(ot_fused->ti[m].kf.estimated.at<float>(0), ot_fused->ti[m].kf.estimated.at<float>(1));
+    //                ot_fused->ti[m].trajectory_kf.push_back(ot_fused->ti[m].kf.statePt);
+    //                int last_kf = ot_fused->ti[m].trajectory_kf.size() - 1;
+    //                if (last_kf >= 2) {
+    //                    // (cm), (m/s), (m/s^2)
+    //                    cv::Point2f pt_pre2t = cv::Point2f(ot_fused->ti[m].trajectory_kf[last_kf - 2]);
+    //                    cv::Point2f pt_pre1t = cv::Point2f(ot_fused->ti[m].trajectory_kf[last_kf - 1]);
+    //                    cv::Point2f pt_now = cv::Point2f(ot_fused->ti[m].trajectory_kf[last_kf]);
+    //                    float time_proc = 1.0 * sv->time_proc;
+    //                    cv::Point2f vel_prev2t_1t = SensorBase::velEstimation(pt_pre1t, pt_pre2t, time_proc, VEL_ESTI::CM_PER_FRAME2M_PER_SEC);
+    //                    cv::Point2f vel_prev1t_now = SensorBase::velEstimation(pt_now, pt_pre1t, time_proc, VEL_ESTI::CM_PER_FRAME2M_PER_SEC);
+    //                    cv::Point2f acc = cv::Point2f((vel_prev1t_now.x - vel_prev2t_1t.x) / time_proc, (vel_prev1t_now.y - vel_prev2t_1t.y) / time_proc);
+    //                    ot_fused->ti[m].info[last].vel.x = vel_prev1t_now.x;
+    //                    ot_fused->ti[m].info[last].vel.y = vel_prev1t_now.y;
+    //                    ot_fused->ti[m].info[last].acc.x = acc.x;
+    //                    ot_fused->ti[m].info[last].acc.y = acc.y;
+    //                }
+    //                randn(ot_fused->ti[m].kf.processNoise, cv::Scalar(0), cv::Scalar::all(sqrt(ot_fused->ti[m].kf.kf_core.processNoiseCov.at<float>(0, 0))));
+    //                ot_fused->ti[m].kf.state = ot_fused->ti[m].kf.kf_core.transitionMatrix * ot_fused->ti[m].kf.state + ot_fused->ti[m].kf.processNoise;
+    //            }
+    //            lock_ot_fused.unlock();
+    //        }
+    //    }
 
     lock_ot_fused.lockForWrite();
     for (int m = 0; m < ot_fused->ti.size(); m++) {
@@ -775,12 +777,14 @@ void SensorInfo::dataCollisionAvoidance()
             cv::Point tl, br;
             tl = cv::Point(data_fused[p].rect_f.tl().x, data_fused[p].rect_f.tl().y);
             br = cv::Point(data_fused[p].rect_f.br().x, data_fused[p].rect_f.br().y);
+            lock_a_star.lockForWrite();
             for (int c = tl.x; c <= br.x; c++) {
                 for (int r = tl.y; r <= br.y; r++) {
                     ca->astar->kernelDilation(cv::Point(c, r),
                                               cv::Size(vehicle.width_pixel, vehicle.length_pixel));
                 }
             }
+            lock_a_star.unlock();
         }
         else if (data_fused[p].det_mode == DETECT_MODE::RADAR_ONLY) {
             ca->astar->kernelDilation(data_fused[p].plot_pt_f, cv::Size(vehicle.width_pixel + 9, vehicle.length_pixel + 11));
@@ -789,8 +793,9 @@ void SensorInfo::dataCollisionAvoidance()
     lock_data_fused.unlock();
 
     // A* path planning
+    lock_a_star.lockForWrite();
     ca->path = ca->astar->PathFind2D(320, 320, 320, 0);
-
+    lock_a_star.unlock();
 #ifdef debug_info_ca_astar
     int ratio = 1;
     int display_w = MAP_WIDTH * ratio;
@@ -821,7 +826,7 @@ void SensorInfo::dataCollisionAvoidance()
     }
 
     cv::imshow("A* result", img_result);
-//    cv::imwrite("Astar.jpg", img_result);
+    //    cv::imwrite("Astar.jpg", img_result);
 #endif
 }
 
@@ -881,8 +886,8 @@ void SensorInfo::dataProcess(bool fg_sv, bool fg_radar)
                         deviation_x = pow((radar_pos.x - sv_pos.x), 2);
                         deviation_z = pow((radar_pos.y - sv_pos.y), 2);
                         deviation = deviation_x + deviation_z;
-//                        std::cout<<deviation<<" "<<closest_radar_distance<<" "<<R_sv<<std::endl;
-//                        std::cout<<"RADAR: "<<radar_pos.x<<" "<<radar_pos.y<<std::endl;
+                        //                        std::cout<<deviation<<" "<<closest_radar_distance<<" "<<R_sv<<std::endl;
+                        //                        std::cout<<"RADAR: "<<radar_pos.x<<" "<<radar_pos.y<<std::endl;
                         double related_ratio = abs(radar_pos.y - sv_pos.y) / abs(radar_pos.x - sv_pos.x);
                         double slope = 2.0;
                         // 1. within rect
@@ -892,9 +897,9 @@ void SensorInfo::dataProcess(bool fg_sv, bool fg_radar)
                         }
                         // 2. within range
                         else if ((deviation < R_sv && (related_ratio >= slope || radar_pos.x - sv_pos.x == 0.0)) ||
-                                (deviation < 0.5 * R_sv && related_ratio < slope)) {
-//                        if (deviation < R_sv) {
-//                            qDebug()<<deviation<<related_ratio<<"\t"<<sv_pos.x<<sv_pos.y<<radar_pos.x<<radar_pos.y;
+                                 (deviation < 0.5 * R_sv && related_ratio < slope)) {
+                            //                        if (deviation < R_sv) {
+                            //                            qDebug()<<deviation<<related_ratio<<"\t"<<sv_pos.x<<sv_pos.y<<radar_pos.x<<radar_pos.y;
                             bool fg_closest = true;
                             for (int p = 0; p < sv->objSize(); p++) {
                                 if (p == k || !d_sv[p].labeled) continue;
@@ -1197,9 +1202,9 @@ void SensorInfo::drawFusedTopView(bool fg_sv, bool fg_radar, bool fg_sv_each, bo
             }
         }
         // side collision
-//        if (ot_fused->ti[p].info.pc < ) {
+        //        if (ot_fused->ti[p].info.pc < ) {
 
-//        }
+        //        }
     }
     gui_display_time++;
 
@@ -1212,7 +1217,7 @@ void SensorInfo::drawFusedTopView(bool fg_sv, bool fg_radar, bool fg_sv_each, bo
             int map_y = ca->path[k].second;
             for (int r = map_y; r < map_y + 1; r++) {
                 for (int c = map_x; c < map_x + 1; c++) {
-                    fused_topview.at<cv::Vec4b>(r, c) = cv::Vec4b(0, 0, 0, 255);
+                    fused_topview.at<cv::Vec4b>(r, c) = cv::Vec4b(255, 0, 0, 255);
                 }
             }
         }

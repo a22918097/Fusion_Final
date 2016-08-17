@@ -17,7 +17,7 @@ extern QReadWriteLock lock_sv_mouse;
 extern QReadWriteLock lock_f_sv;
 extern QReadWriteLock lock_f_topview;
 extern QReadWriteLock lock_data_fused;
-
+extern QReadWriteLock lock_a_star;
 // recording
 #include "recording/recording.h"
 extern recording re;

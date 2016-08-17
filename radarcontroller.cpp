@@ -487,7 +487,9 @@ void RadarController::pointProjectTopView()
 //                if(temp_range[m]!=vote_range[m][10])
 //                    topview.setTo(cv::Scalar(0,0,0,0));
                 if(vote_range[m][10]!=0 && vote_count%20==0){
-                    cv::putText(topview,QString::number(vote_range[m][10]).toStdString()+"m",cv::Point(0.5*900+objects[m].x/37*450+10,600-objects[m].z/30*600+10),cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar(0, 0, 0, 255));
+                    //cv::putText(topview,QString::number(vote_range[m][10]).toStdString()+"m",cv::Point(0.5*900+objects[m].x/37*450+10,600-objects[m].z/30*600+10),cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar(0, 0, 0, 255));
+                    cv::putText(topview,QString::number(objects[m].range).toStdString()+"m",cv::Point(0.5*900+objects[m].x/37*450+10,600-objects[m].z/30*600+10),cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar(0, 0, 0, 255));
+
                     cv::circle(topview,cv::Point(0.5*900+objects[m].x/37*450,600-objects[m].z/30*600),6,cv::Scalar(0,0,0,255),-1);
                     //qDebug() << m << vote_range[m][10] << objects[m].range << objects[m].x << objects[m].z;
 
